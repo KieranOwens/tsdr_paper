@@ -1,0 +1,24 @@
+# Conda environment for reproducing the numerical experiments in
+# Owens & Fulcher, "Time-Series Dimension Reduction: A Comprehensive Review
+# and Conceptual Unification of Algorithms".
+#
+#   conda env create -f environment.yml
+#   conda activate tsdr_paper
+name: tsdr_paper
+channels:
+  - conda-forge
+dependencies:
+  - python=3.13
+  - numpy>=2.1
+  - scipy>=1.14
+  - scikit-learn>=1.5
+  - matplotlib>=3.9
+  - joblib>=1.4
+  - umap-learn>=0.5.7
+  - pywavelets
+  - kneed
+  - jupyterlab
+  - ipykernel
+  - pip
+  - pip:
+      - tsdr==0.10

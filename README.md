@@ -1,18 +1,54 @@
-<h1 align="center">Time-Series Dimension Reduction (TSDR) paper numerical experiment</h1>
+# Numerical experiments for "Time-Series Dimension Reduction"
 
-## About
+This repository contains the code to reproduce the numerical experiments (Sec. 4 and the Supplementary Material) of
 
-This repository contains code for the numerical experiment in:
+> K. S. Owens and B. D. Fulcher, *Time-Series Dimension Reduction: A Comprehensive Review and Conceptual Unification of Algorithms*.
 
-- &#x1F4D7; Owens & Fulcher [Time-series dimension reduction: a comprehensive review and conceptual unification of algorithms](url), _arXiv_ (In Preparation).
+The experiments use the [`tsdr`](https://github.com/KieranOwens/tsdr) Python package, which implements the 30 time-series dimension-reduction (TSDR) methods compared in the paper.
 
+## Contents
 
-## Usage
+| Path | Description |
+|---|---|
+| `tsdr_experiment_final.ipynb` | Notebook that runs all experiments and draws all figures |
+| `environment.yml` | Conda environment |
+| `results/` | Saved results (`.npz`), so that the figures can be redrawn without re-running the experiments |
+| `figures/` | Figures as they appear in the paper |
 
-Using `pip` for [`tsdr`](https://pypi.org/project/tsdr/):
+## Setup
 
+```bash
+git clone https://github.com/KieranOwens/tsdr_paper.git
+cd tsdr_paper
+conda env create -f environment.yml
+conda activate tsdr_paper
+jupyter lab tsdr_experiment_final.ipynb
 ```
-pip install tsdr
-```
 
-More to come....
+## Reproducing the results
+
+Run all cells of the notebook. Each experiment hides a one-dimensional signal among noise sources, mixes them with a random orthogonal matrix, and scores the first component of each of 30 TSDR methods and eight general dimension-reduction methods by its squared correlation, R², with the signal.
+
+| Notebook section | Experiment | Figure |
+|---|---|---|
+| 1 | Sinusoid in full-rank or low-rank noise of increasing variance | Fig. 4a |
+| 2 | Sinusoid in noise with a dominant eigenvalue λ₁ and a noise floor ε | Fig. 4b–d |
+| 3 | AR(1), heteroskedastic and logistic-map signals (PCA, SFA, ASSA, PrCA) | Fig. 4e |
+| Supplement | Extreme noise variances, σ² = 10⁻², …, 10¹⁴ | Fig. S1 |
+| Supplement | One to eight dominant noise eigenvalues | Fig. S2 |
+| Supplement | Scoring the best of three components | Fig. S3 |
+
+Settings at the top of the notebook:
+
+- `OVERWRITE = False` (default): experiments whose results are already in `results/` are loaded rather than re-run, so running the notebook as distributed only redraws the figures (a few minutes). Set `OVERWRITE = True` to re-run every experiment from scratch.
+- `QUICK = True`: runs every experiment with few iterations on coarse grids, writing to `results_quick/` and `figures_quick/`, to check that the code runs (a few minutes).
+- `N_JOBS = -1`: number of parallel workers (all cores by default).
+- `SEED = 1`: master random seed, from which each experiment derives its own seeds.
+
+Re-running all experiments takes many hours; most of the time is spent in t-SNE, the autoencoder, and the EM-fitted LDS and DFA. On an 8-core laptop, the sensitivity analysis of Fig. S2 alone took about three hours.
+
+Results are reproducible for a given seed, but may differ slightly across platforms and library versions (e.g., due to differences in linear-algebra backends or in the numerics of t-SNE and UMAP). `ConvergenceWarning`s from FastICA are expected and do not affect the results.
+
+## Citation
+
+If you use this code, please cite the paper above and the `tsdr` package.
