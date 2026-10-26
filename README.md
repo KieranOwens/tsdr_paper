@@ -1,18 +1,19 @@
 # Numerical experiments for "Time-Series Dimension Reduction"
 
-This repository contains the code to reproduce the numerical experiments (Sec. 4 and the Supplementary Material) of
+This repository contains the code and results for the numerical experiments (Sec. 4 and the Supplementary Material) of
 
-> K. S. Owens and B. D. Fulcher, *Time-Series Dimension Reduction: A Comprehensive Review and Conceptual Unification of Algorithms*.
+> K. S. Owens and B. D. Fulcher, *Time-Series Dimension Reduction: A Comprehensive Review and Conceptual Unification of Algorithms*, ACM Computing Surveys (under review).
 
-The experiments use the [`tsdr`](https://github.com/KieranOwens/tsdr) Python package, which implements the 30 time-series dimension-reduction (TSDR) methods compared in the paper.
+The experiments use the [`tsdr`](https://github.com/KieranOwens/tsdr) Python package, which implements the 30 time-series dimension-reduction (TSDR) methods compared in the paper. All results in this repository were generated with **tsdr version 0.11** ([doi:10.5281/zenodo.23661377](https://doi.org/10.5281/zenodo.23661377)).
 
 ## Contents
 
 | Path | Description |
 |---|---|
 | `tsdr_experiment_final.ipynb` | Notebook that runs all experiments and draws all figures |
-| `environment.yml` | Conda environment |
-| `results/` | Saved results (`.npz`), so that the figures can be redrawn without re-running the experiments |
+| `environment.yml` | Conda environment (pins `tsdr==0.11`) |
+| `environment-lock.yml`, `requirements-lock.txt` | Exact versions of every package used to generate the results |
+| `results/` | Saved results (`.npz`), so that the figures can be redrawn without re-running the experiments. Each file also records the package versions used and the number of failed fits for each method |
 | `figures/` | Figures as they appear in the paper |
 
 ## Setup
@@ -25,33 +26,38 @@ conda activate tsdr_paper
 jupyter lab tsdr_experiment_final.ipynb
 ```
 
+To reproduce the exact environment used for the paper, create it from the lock file instead:
+
+```bash
+conda env create -f environment-lock.yml
+```
+
 ## Reproducing the results
 
-Run all cells of the notebook. Each experiment hides a one-dimensional signal among noise sources, mixes them with a random orthogonal matrix, and scores the first component of each of 30 TSDR methods and eight general dimension-reduction methods by its squared correlation, R², with the signal.
+Run all cells of the notebook. Each experiment hides a one-dimensional signal among noise sources, mixes them with a random orthogonal matrix, and scores the first component of each of 30 TSDR methods and eight general dimension-reduction methods by its squared correlation, R², with the signal. As a reference, an Oracle fits the signal to the observed time series by least-squares linear regression, giving the best possible instantaneous linear recovery.
 
 | Notebook section | Experiment | Figure |
 |---|---|---|
 | 1 | Sinusoid in full-rank or low-rank noise of increasing variance | Fig. 4a |
 | 2 | Sinusoid in noise with a dominant eigenvalue λ₁ and a noise floor ε | Fig. 4b–d |
 | 3 | AR(1), heteroskedastic and logistic-map signals (PCA, SFA, ASSA, PrCA) | Fig. 4e |
-| Supplement | Extreme noise variances, σ² = 10⁻², …, 10¹⁴ | Fig. S1 |
-| Supplement | One to eight dominant noise eigenvalues | Fig. S2 |
-| Supplement | Scoring the best of three components | Fig. S3 |
+| S1 | Extreme noise variances, σ² = 10⁻², …, 10¹⁴ | Fig. S1 |
+| S2 | One to eight dominant noise eigenvalues | Fig. S2 |
+| S3 | Scoring the best of three components | Fig. S3 |
 
 Settings at the top of the notebook:
 
 - `OVERWRITE = False` (default): experiments whose results are already in `results/` are loaded rather than re-run, so running the notebook as distributed only redraws the figures (a few minutes). Set `OVERWRITE = True` to re-run every experiment from scratch.
-- `QUICK = True`: runs every experiment with few iterations on coarse grids, writing to `results_quick/` and `figures_quick/`, to check that the code runs (on the order of an hour, since Fig. S1 keeps all 17 noise variances and Fig. S2 always runs all eight cases).
+- `QUICK = True`: runs every experiment with few iterations on coarse grids, writing to `results_quick/` and `figures_quick/`, to check that the code runs (on the order of an hour, since S1 keeps all 17 noise variances and S2 always runs all eight cases).
 - `N_JOBS = -1`: number of parallel workers (all cores by default).
 - `SEED = 1`: master random seed, from which each experiment derives its own seeds.
 
-Re-running all experiments takes many hours; most of the time is spent in t-SNE, the autoencoder, and the EM-fitted LDS and DFA. On an 8-core laptop, the sensitivity analysis of Fig. S2 alone took about three hours.
+Re-running all experiments took about 5 hours on an 8-core laptop, most of it in t-SNE, the autoencoder, and the EM-fitted LDS and DFA.
 
-Note that, as shipped, `load_or_run` finds the results of every experiment in `results/`, so running the notebook only redraws the figures unless `OVERWRITE = True`.
-The numbers quoted in the paper text and in Tables S1 and S2 are not generated by the notebook.
+The numbers quoted in the paper text and in Supplementary Tables S1 and S2 are not generated by the notebook.
 
-Results are reproducible for a given seed, but may differ slightly across platforms and library versions (e.g., due to differences in linear-algebra backends or in the numerics of t-SNE and UMAP). `ConvergenceWarning`s from FastICA are expected and do not affect the results.
+Results are reproducible for a given seed, but may differ slightly across platforms and library versions (e.g., due to differences in linear-algebra backends or in the numerics of t-SNE and UMAP). Convergence warnings from FastICA and from some iterative TSDR methods are expected. A method that fails on a draw is scored R² = 0 and counted in the results file; this occurs only at σ² = 10¹⁴ in S1, where PCA whitening reaches the limits of double precision in one of the 20 draws.
 
 ## Citation
 
-If you use this code, please cite the paper above and the `tsdr` package.
+If you use this code, please cite the paper above and the `tsdr` package ([doi:10.5281/zenodo.23661377](https://doi.org/10.5281/zenodo.23661377)).
