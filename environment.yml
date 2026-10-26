@@ -21,4 +21,4 @@ dependencies:
   - ipykernel
   - pip
   - pip:
-      - tsdr==0.10
+      - tsdr==0.11
