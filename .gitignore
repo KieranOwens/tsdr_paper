@@ -1,0 +1,5 @@
+results_quick/
+figures_quick/
+.ipynb_checkpoints/
+__pycache__/
+.DS_Store
