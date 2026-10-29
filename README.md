@@ -42,7 +42,7 @@ Run all cells of the notebook. Each experiment hides a one-dimensional signal am
 | 2 | Sinusoid in noise with a dominant eigenvalue λ₁ and a noise floor ε | Fig. 4b–d |
 | 3 | AR(1), heteroskedastic and logistic-map signals (PCA, SFA, ASSA, PrCA) | Fig. 4e |
 | S1 | Extreme noise variances, σ² = 10⁻², …, 10¹⁴ | Fig. S1 |
-| S2 | One to eight dominant noise eigenvalues | Fig. S2 |
+| S2 | All methods spectrum | Fig. S2 |
 | S3 | Scoring the best of three components | Fig. S3 |
 
 Settings at the top of the notebook:
